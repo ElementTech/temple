@@ -5,8 +5,8 @@ The package provides an interface for defining HTTP requests in YAML files
 and making those requests with Python. The package raises several custom
 exceptions, including:
 
-- NoPlanError: raised when no requests temple file is provided.
-- InvalidPlanError: raised when a requests temple file is invalid.
+- NoTempleError: raised when no requests temple file is provided.
+- InvalidTempleError: raised when a requests temple file is invalid.
 - InterruptedError: raised when the user interrupts the program.
 
 The package defines several constants:
@@ -22,9 +22,10 @@ repository.
 """
 # pylint: disable=redefined-builtin
 NO_TEMPLE = 251
-INVALID_TEMPLE = 252
-INTERRUPTED = 253
-UNKNOWN_ERROR = 254
+NO_SCRIPT = 252
+INVALID_TEMPLE = 253
+INTERRUPTED = 254
+UNKNOWN_ERROR = 255
 
 
 UNKNOWN_ERROR_MSG = (
@@ -36,7 +37,7 @@ UNKNOWN_ERROR_MSG = (
 
 class TempleError(Exception):
     """
-    Base class for exceptions raised by the YamlRequests package.
+    Base class for exceptions raised by the Temple package.
 
     Args:
       message (str): A message describing the error.
@@ -48,7 +49,7 @@ class TempleError(Exception):
         self.exit_code = exit_code
 
 
-class NoPlanError(TempleError):
+class NoTempleError(TempleError):
     """
     Exception raised when no requests temple file is provided.
 
@@ -63,7 +64,22 @@ class NoPlanError(TempleError):
             super().__init__(f"Did not find temple file in {path}.", NO_TEMPLE)
 
 
-class InvalidPlanError(TempleError):
+class NoScriptError(TempleError):
+    """
+    Exception raised when no requests temple file is provided.
+
+    Args:
+      path (str, optional): The path to the missing temple file.
+    """
+
+    def __init__(self, path=None):
+        if not path:
+            super().__init__("No script file provided.", NO_SCRIPT)
+        else:
+            super().__init__(f"Did not find script file in {path}.", NO_SCRIPT)
+
+
+class InvalidTempleError(TempleError):
     """
     Exception raised when a requests temple file is invalid.
 

@@ -1,8 +1,7 @@
 ---
 name: example
 template: basic.html
-code:
-  entrypoint: example.py
+script: example.py
 markdown: README.md
 parameters:
   - default: mytext

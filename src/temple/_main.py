@@ -21,16 +21,17 @@ from traceback import print_exc
 from jinja2 import __version__ as _jinja2_version
 from yaml import __version__ as _pyyaml_version
 
-from .utils.args import get_argparser, load_temple_file, parse_variables
+from .utils.args import get_argparser, load_temple_file
 from .logger import ConsoleLogger
 from ._temple import Temple
 from ._version import __version__
 from .error import (
-    NoPlanError,
+    NoTempleError,
+    NoScriptError,
     InterruptedError,
-    InvalidPlanError,
-    YamlRequestsError,
-    INVALID_TEMPLE,
+    InvalidTempleError,
+    TempleError,
+    # INVALID_TEMPLE,
     UNKNOWN_ERROR,
     UNKNOWN_ERROR_MSG,
 )
@@ -58,18 +59,16 @@ def main():
         _print_versions()
         return 0
 
-    logger = ConsoleLogger(animations=args.animation, colors=args.colors)
+    logger = ConsoleLogger()
 
+    # try:
+    #     variables_override = parse_variables(args.variables)
+    # except ValueError as error:
+    #     logger.error(str(error))
+    #     return INVALID_TEMPLE
     try:
-        variables_override = parse_variables(args.variables)
-    except ValueError as error:
-        logger.error(str(error))
-        return INVALID_TEMPLE
-
-    try:
-        num_errors = run(args.temple_file, logger, variables_override)
-        return min(num_errors, 250)
-    except YamlRequestsError as error:
+        run(args.temple_file, logger)
+    except TempleError as error:
         logger.error(str(error))
         return error.exit_code
     except BaseException:
@@ -79,7 +78,7 @@ def main():
         return UNKNOWN_ERROR
 
 
-def run(temple_file, logger, variables_override=None):
+def run(temple_file, logger):
     """
     Parses command line arguments, loads a requests plan file, and runs
     the requests specified in the plan. If any errors occur during this
@@ -89,20 +88,16 @@ def run(temple_file, logger, variables_override=None):
       int: The exit code for the program.
     """
     try:
-        if not temple_file:
-            raise NoPlanError()
-
         try:
             temple_dict = load_temple_file(temple_file)
-            temple_object = Temple(temple_dict, variables_override=variables_override)
-            print(temple_object, temple_dict, variables_override)
-        except FileNotFoundError as exc:
-            raise NoPlanError(temple_file) from exc
+            temple_object = Temple(temple_dict, temple_file)
+            print(temple_object, temple_dict)
         except (
+            TempleError,
             ValueError,
             AssertionError,
         ) as error:
-            raise InvalidPlanError(str(error)) from error
+            raise InvalidTempleError(str(error)) from error
 
         return 0
     except KeyboardInterrupt as exc:
