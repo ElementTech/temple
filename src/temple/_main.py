@@ -20,17 +20,17 @@ from traceback import print_exc
 
 from jinja2 import __version__ as _jinja2_version
 from yaml import __version__ as _pyyaml_version
-from requests import __version__ as _requests_version
 
-from .utils.args import get_argparser, load_plan_file, parse_variables
+from .utils.args import get_argparser, load_temple_file, parse_variables
 from .logger import ConsoleLogger
+from ._temple import Temple
 from ._version import __version__
 from .error import (
     NoPlanError,
     InterruptedError,
     InvalidPlanError,
     YamlRequestsError,
-    INVALID_PLAN,
+    INVALID_TEMPLE,
     UNKNOWN_ERROR,
     UNKNOWN_ERROR_MSG,
 )
@@ -64,10 +64,10 @@ def main():
         variables_override = parse_variables(args.variables)
     except ValueError as error:
         logger.error(str(error))
-        return INVALID_PLAN
+        return INVALID_TEMPLE
 
     try:
-        num_errors = run(args.plan_file, logger, variables_override)
+        num_errors = run(args.temple_file, logger, variables_override)
         return min(num_errors, 250)
     except YamlRequestsError as error:
         logger.error(str(error))
@@ -79,7 +79,7 @@ def main():
         return UNKNOWN_ERROR
 
 
-def run(plan_file, logger, variables_override=None):
+def run(temple_file, logger, variables_override=None):
     """
     Parses command line arguments, loads a requests plan file, and runs
     the requests specified in the plan. If any errors occur during this
@@ -89,15 +89,15 @@ def run(plan_file, logger, variables_override=None):
       int: The exit code for the program.
     """
     try:
-        if not plan_file:
+        if not temple_file:
             raise NoPlanError()
 
         try:
-            plan_dict = load_plan_file(plan_file)
-            # plan = Plan(plan_dict, variables_override=variables_override)
-            print(plan_dict, variables_override)
+            temple_dict = load_temple_file(temple_file)
+            temple_object = Temple(temple_dict, variables_override=variables_override)
+            print(temple_object, temple_dict, variables_override)
         except FileNotFoundError as exc:
-            raise NoPlanError(plan_file) from exc
+            raise NoPlanError(temple_file) from exc
         except (
             ValueError,
             AssertionError,

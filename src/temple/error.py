@@ -5,14 +5,14 @@ The package provides an interface for defining HTTP requests in YAML files
 and making those requests with Python. The package raises several custom
 exceptions, including:
 
-- NoPlanError: raised when no requests plan file is provided.
-- InvalidPlanError: raised when a requests plan file is invalid.
+- NoPlanError: raised when no requests temple file is provided.
+- InvalidPlanError: raised when a requests temple file is invalid.
 - InterruptedError: raised when the user interrupts the program.
 
 The package defines several constants:
 
-- NO_PLAN: exit code indicating that no requests plan file was provided.
-- INVALID_PLAN: exit code indicating that a requests plan file was invalid.
+- NO_TEMPLE: exit code indicating that no requests temple file was provided.
+- INVALID_TEMPLE: exit code indicating that a requests temple file was invalid.
 - INTERRUPTED: exit code indicating that the user interrupted the program.
 - UNKNOWN_ERROR: exit code indicating an unexpected error occurred.
 
@@ -21,8 +21,8 @@ a message instructing the user to create a bug report on the package's GitHub
 repository.
 """
 # pylint: disable=redefined-builtin
-NO_PLAN = 251
-INVALID_PLAN = 252
+NO_TEMPLE = 251
+INVALID_TEMPLE = 252
 INTERRUPTED = 253
 UNKNOWN_ERROR = 254
 
@@ -34,7 +34,7 @@ UNKNOWN_ERROR_MSG = (
 )
 
 
-class YamlRequestsError(Exception):
+class TempleError(Exception):
     """
     Base class for exceptions raised by the YamlRequests package.
 
@@ -48,34 +48,34 @@ class YamlRequestsError(Exception):
         self.exit_code = exit_code
 
 
-class NoPlanError(YamlRequestsError):
+class NoPlanError(TempleError):
     """
-    Exception raised when no requests plan file is provided.
+    Exception raised when no requests temple file is provided.
 
     Args:
-      path (str, optional): The path to the missing plan file.
+      path (str, optional): The path to the missing temple file.
     """
 
     def __init__(self, path=None):
         if not path:
-            super().__init__("No requests plan file provided.", NO_PLAN)
+            super().__init__("No requests temple file provided.", NO_TEMPLE)
         else:
-            super().__init__(f"Did not find plan file in {path}.", NO_PLAN)
+            super().__init__(f"Did not find temple file in {path}.", NO_TEMPLE)
 
 
-class InvalidPlanError(YamlRequestsError):
+class InvalidPlanError(TempleError):
     """
-    Exception raised when a requests plan file is invalid.
+    Exception raised when a requests temple file is invalid.
 
     Args:
       message (str): A message describing the error.
     """
 
     def __init__(self, message):
-        super().__init__(message, INVALID_PLAN)
+        super().__init__(message, INVALID_TEMPLE)
 
 
-class InterruptedError(YamlRequestsError):
+class InterruptedError(TempleError):
     """
     Exception raised when the user interrupts the program.
 

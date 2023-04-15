@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>{{ name }}</title>
+</head>
+
+<body>
+	<h1>{{ name }}</h1>
+	<p>{{ readme }}</p>
+	<form method="POST" action="/">
+		{% for param in parameters %} <label> {{ param.name }} : </label> {% if
+		param.type == 'text' %}
+		<input type="text" name="{{ param.name }}" value="{{ param.default }}" />
+		{% elif param.type == 'number' %}
+		<input type="number" name="{{ param.name }}" value="{{ param.default }}" />
+		{% elif param.type == 'single-choice' %}
+		<select name="{{ param.name }}">
+			{% for choice in param.choices %} {% if choice == param.default %}
+			<option value="{{ choice }}" selected>{{ choice }}</option>
+			{% else %}
+			<option value="{{ choice }}">{{ choice }}</option>
+			{% endif %} {% endfor %}
+		</select>
+		{% elif param.type == 'multi-choice' %} {% set defaults = param.default if
+		param.default is iterable else [param.default] %} {% for choice in
+		param.choices %}
+		<label>
+			<input type="checkbox" name="{{ param.name }}" value="{{ choice }}" {% if choice in defaults %}checked{%
+				endif %} />
+			{{ choice }}
+		</label>
+		{% endfor %} {% endif %} <br />{% endfor %}
+		<input type="submit" value="Submit" />
+	</form>
+	{% if init %}
+	<p>Init log :</p>
+	<pre> {{ init }} </pre>
+	{% endif %} {% if follow %}
+	<p>Follow log:</p>
+	<pre> {{ follow }} </pre>
+	{% endif %} {% if result %}
+	<p>Result log:</p>
+	<pre> {{ result }} </pre>
+	{% endif %}
+</body>
+
+</html>
