@@ -9,7 +9,7 @@ Temple: A class representing a template.
 """
 
 import os
-
+import importlib
 
 class Parameter:
     """
@@ -152,20 +152,39 @@ class Temple:
 
     def __init__(self, template_dict, template_file):
         self.name = template_dict.get("name")
-        self.template = os.path.join(os.path.dirname(template_file),"templates", template_dict.get("template", "temple.html"))
-        self.script = os.path.join(os.path.dirname(template_file), template_dict.get("script", "temple.py"))
-        self.markdown = os.path.join(os.path.dirname(template_file), template_dict.get("markdown", "README.md"))
+        if not template_dict.get("template"):
+            raise AssertionError("Temple file must reference an html template.")
+        self.template = os.path.join(os.path.dirname(template_file), "templates", template_dict.get("template"))
+        code = os.path.join(os.path.dirname(template_file), "code")
+        markdown_file = os.path.join(os.path.dirname(template_file), "README.md")
+        if os.path.isfile(markdown_file):
+            with open(markdown_file, 'r', encoding='UTF-8') as file:
+                self.markdown = file.read()
+        else:
+            self.markdown = ""
         self.parameters = [Parameter.from_dict(param_dict) for param_dict in template_dict.get("parameters", [])]
 
         if not self.name:
             raise AssertionError("Temple file must contain a name.")
-        if not os.path.isfile(self.template):
+        if not os.path.exists(self.template):
             raise AssertionError(
                 f"Jinja2 file {self.template} could not be found. \
                     Provide your temple.yaml a relative path to a jinja2 file."
             )
-        if not os.path.isfile(self.script):
+        if not os.path.isdir(code):
             raise AssertionError(
-                f"Script file {self.script} could not be found. \
+                f"Code directory {code} could not be found. \
                     Provide your temple.yaml with a relative path to the entrypoint file of your script."
             )
+        try:
+            self.code = importlib.import_module(code.replace("/","."))
+        except BaseException as exc:
+            raise AssertionError(
+                str(exc)
+            ) from exc
+        if not set(['log', 'res', 'run']).issubset(set(dir(code))):
+            raise AssertionError(
+                "run, log or res functions are missing from your __init__.py"
+            )
+
+        print(self.code)

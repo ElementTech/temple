@@ -1,8 +1,6 @@
 ---
 name: example
-template: basic.html
-script: example.py
-markdown: README.md
+template: basic.html # or remote URL
 parameters:
   - default: mytext
     name: string-param
