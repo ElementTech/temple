@@ -25,9 +25,8 @@ from .utils.args import get_argparser, load_temple_file
 from .logger import ConsoleLogger
 from ._temple import Temple
 from ._version import __version__
+from ._server import TempleServer
 from .error import (
-    NoTempleError,
-    NoScriptError,
     InterruptedError,
     InvalidTempleError,
     TempleError,
@@ -67,7 +66,7 @@ def main():
     #     logger.error(str(error))
     #     return INVALID_TEMPLE
     try:
-        run(args.temple_file, logger)
+        return run(args.temple_file, logger)
     except TempleError as error:
         logger.error(str(error))
         return error.exit_code
@@ -91,7 +90,8 @@ def run(temple_file, logger):
         try:
             temple_dict = load_temple_file(temple_file)
             temple_object = Temple(temple_dict, temple_file)
-            print(temple_object, temple_dict)
+            template_server = TempleServer(temple_object)
+            template_server.run()
         except (
             TempleError,
             ValueError,
