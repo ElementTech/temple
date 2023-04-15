@@ -90,7 +90,7 @@ def run(temple_file, logger):
         try:
             temple_dict = load_temple_file(temple_file)
             temple_object = Temple(temple_dict, temple_file)
-            template_server = TempleServer(temple_object)
+            template_server = TempleServer(temple_object, temple_file)
             template_server.run()
         except (
             TempleError,
