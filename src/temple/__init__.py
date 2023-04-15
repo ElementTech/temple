@@ -4,5 +4,5 @@
 #   -------------------------------------------------------------
 """Python Package Template"""
 from __future__ import annotations
-
-__version__ = "0.0.2"
+from ._version import __version__
+from ._main import main, run

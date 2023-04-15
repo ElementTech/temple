@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+from src.temple import main
+
+code = main()
+exit(code)
