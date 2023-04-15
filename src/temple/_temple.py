@@ -134,7 +134,10 @@ class Parameter:
             return cls.from_multi_choice(name, default=default, choices=choices)
         raise ValueError(f"Invalid parameter type: {param_type}")
 
-
+def list_functions(mod):
+    ' list of functions defined in module mod '
+    return [func.__name__ for func in mod.__dict__.values()
+            if is_mod_function(mod, func)]
 class Temple:
     """
     A class that represents a template.
@@ -182,9 +185,15 @@ class Temple:
             raise AssertionError(
                 str(exc)
             ) from exc
-        if not set(['log', 'res', 'run']).issubset(set(dir(code))):
+        if "run" not in dir(self.code):
             raise AssertionError(
-                "run, log or res functions are missing from your __init__.py"
+                "run function is missing from your __init__.py"
             )
-
-        print(self.code)
+        if "log" not in dir(self.code):
+            raise AssertionError(
+                "log function is missing from your __init__.py"
+            )
+        if "res" not in dir(self.code):
+            raise AssertionError(
+                "res function is missing from your __init__.py"
+            )
