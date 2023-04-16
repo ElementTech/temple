@@ -11,7 +11,7 @@ def get_argparser():
       An ArgumentParser object.
     """
     parser = ArgumentParser()
-    parser.add_argument("temple_file", type=str, nargs="?", help="Load a template definition from JSON or YAML file.")
+    parser.add_argument("temple_dir", type=str, nargs="?", help="Load a temple definition from temple directory.")
     # parser.add_argument(
     #     "-v",
     #     "--variable",
@@ -36,7 +36,7 @@ def load_temple_file(filename):
     """Loads and returns a JSON or YAML file containing a requests plan.
 
     Args:
-      filename: A string representing the filename of the plan file.
+      temple_ir: A string representing the temple_dir of the plan file.
 
     Returns:
       A dictionary containing the requests plan.

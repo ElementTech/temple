@@ -183,15 +183,4 @@ class Temple:
             raise AssertionError(
                 str(exc)
             ) from exc
-        if "run" not in dir(self.code):
-            raise AssertionError(
-                "run function is missing from your __init__.py"
-            )
-        # if "log" not in dir(self.code):
-        #     raise AssertionError(
-        #         "log function is missing from your __init__.py"
-        #     )
-        # if "res" not in dir(self.code):
-        #     raise AssertionError(
-        #         "res function is missing from your __init__.py"
-        #     )
+

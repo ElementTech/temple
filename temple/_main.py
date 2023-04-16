@@ -20,7 +20,7 @@ from traceback import print_exc
 
 from jinja2 import __version__ as _jinja2_version
 from yaml import __version__ as _pyyaml_version
-
+import glob
 from .utils.args import get_argparser, load_temple_file
 from .logger import ConsoleLogger
 from ._temple import Temple
@@ -60,13 +60,8 @@ def main():
 
     logger = ConsoleLogger()
 
-    # try:
-    #     variables_override = parse_variables(args.variables)
-    # except ValueError as error:
-    #     logger.error(str(error))
-    #     return INVALID_TEMPLE
     try:
-        return run(args.temple_file, logger)
+        return run(args.temple_dir, logger)
     except TempleError as error:
         logger.error(str(error))
         return error.exit_code
@@ -77,7 +72,7 @@ def main():
         return UNKNOWN_ERROR
 
 
-def run(temple_file, logger):
+def run(temple_dir, logger):
     """
     Parses command line arguments, loads a requests plan file, and runs
     the requests specified in the plan. If any errors occur during this
@@ -88,6 +83,7 @@ def run(temple_file, logger):
     """
     try:
         try:
+            temple_file = glob.glob(f"{temple_dir}/temple.*")[0]
             temple_dict = load_temple_file(temple_file)
             temple_object = Temple(temple_dict, temple_file)
             template_server = TempleServer(temple_object)
