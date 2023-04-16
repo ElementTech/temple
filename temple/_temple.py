@@ -155,9 +155,7 @@ class Temple:
 
     def __init__(self, template_dict, template_file):
         self.name = template_dict.get("name")
-        if not template_dict.get("template"):
-            raise AssertionError("Temple file must reference an html template.")
-        self.template = os.path.join(os.path.dirname(template_file), "templates", template_dict.get("template"))
+        self.template = os.path.join(os.path.dirname(template_file), "templates", "index.html")
         code = os.path.join(os.path.dirname(template_file), "code")
         markdown_file = os.path.join(os.path.dirname(template_file), "README.md")
         if os.path.isfile(markdown_file):

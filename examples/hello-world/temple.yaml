@@ -1,6 +1,5 @@
 ---
 name: example
-template: basic.html # or remote URL
 parameters:
   - default: mytext
     name: string_param
