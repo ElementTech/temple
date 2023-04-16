@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template,send_from_directory, request
+from flask import Flask, render_template, request
 from threading import Thread
 import sys
 import importlib
@@ -7,6 +7,7 @@ from time import sleep
 import ast
 import inspect
 import functools
+
 
 class TempleServer(Thread):
     def __init__(self, temple):
@@ -28,13 +29,13 @@ class TempleServer(Thread):
             if inspect.isfunction(obj):
                 if has_temple_endpoint_decorator(obj):
                     funcDict[name] = obj
+
         @self.app.route("/code/<task>", methods=["GET", "POST"])
         def invoke_function(task):
             if funcDict.get(task):
                 if request.method == "POST":
                     return funcDict.get(task)(**request.values)
                 return funcDict.get(task)(**request.args)
-
 
     def run(self):
         self.app.run()
@@ -44,4 +45,4 @@ class TempleServer(Thread):
 
 
 def has_temple_endpoint_decorator(func):
-    return getattr(func, 'endpoint', False)
+    return getattr(func, "endpoint", False)

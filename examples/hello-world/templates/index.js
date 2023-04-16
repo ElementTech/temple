@@ -1,31 +1,15 @@
 $(() => {
-  marked.setOptions({
-    renderer: new marked.Renderer(),
-    highlight: (code, lang) => hljs.highlightAuto(code).value,
-    langPrefix: 'hljs language-',
-  });
-
-  var objectConstructor = ({}).constructor;
-
-  function stringifyIfNeeded(value) {
-    if (value.constructor === objectConstructor) {
-      return JSON.stringify(value);
-    } else {
-      return value
-    }
-  }
-
+  const appendToLog = (data) => $('#log').append(`${typeof data === 'object' ? JSON.stringify(data) : data}<br />`);
+  const handleAjaxError = (error) => appendToLog(error.responseText);
+  const runAjax = (url) => $.get(url).done(appendToLog).fail(handleAjaxError);
+  const runLogAjax = () => runAjax('/code/log').fail(() => setTimeout(runLogAjax, 500)).done(runResAjax);
+  const runResAjax = () => runAjax('/code/res');
+  marked.setOptions({renderer: new marked.Renderer(),highlight: (code) => hljs.highlightAuto(code).value,langPrefix: 'hljs language-'});
   $('#content').html(marked.parse(`{{ markdown | safe | replace('`','\`') }}`));
-
-
-  const res = () => $.get('/code/res').done(data => $('#log').append("<br />" + stringifyIfNeeded(data))).fail(error => $('#log').append("<br />" + error.responseText));
-
-  const log = () => $.get('/code/log').done(data => ($('#log').append("<br />" + stringifyIfNeeded(data)), res())).fail(error => ($('#log').append("<br />" + error.responseText), setTimeout(log, 500)));
-
-  $('#form').submit(e => {
+  $('#form').submit((e) => {
     e.preventDefault();
     $('#log').empty();
-    const result = $('#form').serializeArray().reduce((acc, { name, value }) => ((acc[name] = acc[name] ? `${acc[name]},${value}` : value), acc), {});
-    $.post('/code/run', result).done(data => ($('#log').append(stringifyIfNeeded(data)), log())).fail(error => ($('#log').append(error.responseText), null));
+    const result = $('#form').serializeArray().reduce((acc, { name, value }) => ({ ...acc, [name]: acc[name] ? `${acc[name]},${value}` : value }), {});
+    $.post('/code/run', result).done((data) => {appendToLog(data);runLogAjax()}).fail(handleAjaxError);
   });
 });
