@@ -3,7 +3,7 @@
 import re
 import setuptools
 
-with open("src/temple/_version.py", "r") as f:
+with open("temple/_version.py", "r") as f:
     try:
         version = re.search(
             r"__version__\s*=\s*[\"']([^\"']+)[\"']",
@@ -18,7 +18,7 @@ setuptools.setup(
     name="temple",
     version=version,
     author="Jatalocks",
-    description="A simple python app for sending a set of consecutive HTTP requests defined in YAML requests plan.",
+    description="A tiny framework for exposing python scripts as parameterized web apps",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/jatalocks/temple",
